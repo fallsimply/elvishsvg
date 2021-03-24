@@ -1,0 +1,130 @@
+<main style="padding: 1rem .75rem">
+	<h2>Elvish SVG</h2>
+	<p class="info">Turn your nested (stroke) icons library into a svg sprite</p>
+	<div class="input">
+		<label class="type--small" for="removeFill">Remove Fill Color</label>
+		<input type="text" class="input__field type--small" id="removeFill" value="#ff00ff" style="letter-spacing: .025rem;">
+	</div>
+	<div class="input">
+		<label class="type--small" for="out">Output</label>
+		<textarea id="out" cols="30" rows="10" class="textarea type--small" style="font-family: inherit">Click Generate and your Sprite will be here</textarea>
+	</div>
+	<div class="button-group">
+		<button id="create" class="button button--primary">Generate</button>
+		<button id="dl" class="button button--secondary" disabled>Download</button>
+	</div>
+</main>
+
+<script>
+	const decoder = new TextDecoder(),
+		  svgParser = new DOMParser()
+	var svgUrl = "", 
+		parentFrame = ""
+
+	document.querySelector("#create").addEventListener("click", () =>
+		parent.postMessage({ pluginMessage: { type: 'generate' } }, '*')
+	)
+
+	document.querySelector("#dl").addEventListener("click", e => {
+		const link = document.createElement('a');
+		link.className = 'button button--primary';
+		link.href = URL.createObjectURL(new Blob([svgUrl], { type: "image/svg+xml" }));
+		link.download = `sample.sprite.svg`
+		link.click()
+		link.setAttribute('download', `${parentFrame}.sprite.svg`);
+	})
+
+	window.addEventListener("message", async (msg) => {
+		data = msg.data.pluginMessage
+		switch (data.type) {
+			case "useUI":
+				switch (data.payload) {
+					case "generate":
+					case "export":
+						document.querySelector(".info").toggleAttribute("hidden")
+						break
+				}
+				break
+			case "decode":
+				let icons = data.payload
+				let groups = []
+
+				console.log("hello", icons)
+
+				/** @type {string} */
+				let color = document.querySelector("#removeFill").value
+
+				for (const icon in icons) {
+					let svgText = decoder.decode(icons[icon]).replace(/\n|\t/g, "").replace(RegExp(` (?<Name>(?:fill)|(?:stroke))="${color.toUpperCase()}"`, "g"), ` $<Name>="currentColor"`)
+					let svg = svgParser.parseFromString(svgText, "image/svg+xml")
+					console.log(svgText, svg)
+					svg.documentElement.setAttribute("id", icon)
+					groups.push(svg.documentElement.outerHTML)
+				}
+
+				let sprite = `<svg fill="none">
+					<defs>
+						${groups.join("")}
+					</defs>
+				</svg>`.replace(/\t|\n/g, "")
+
+				document.querySelector("#out").value = sprite
+				textToCopy = `data:image/svg+xml;utf8,${sprite}`
+				parentFrame = data.parent
+				document.querySelector("#dl").toggleAttribute("disabled")
+		}
+	})
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/thomas-lowry/figma-plugin-ds@master/dist/figma-plugin-ds.css">
+
+<style>
+	h2, p {
+		margin: 0 0 .5rem 0;
+	}
+
+	.button-group, .input {
+		margin: 1rem 0;
+	}
+
+	h2, .button--secondary {
+		color: var(--green);
+		
+	}
+
+	label, input, textarea {
+		font-weight: 500;
+	}
+
+	label, input:not(:focus), textarea {
+		color: var(--black8)
+	}
+
+	.button-group {
+		display: grid;
+		grid-auto-flow: column;
+		grid-gap: .5rem;
+	}
+
+	.button-group > .button {
+		display: inline-block;
+		font-size: .75rem;
+		font-weight: 500;
+	}
+
+	.button--primary {
+		background: var(--green);
+	}
+
+	.button--secondary {
+		border-color: currentColor;
+	}
+
+	input.input__field:not(:hover):not(:focus) {
+		border-color: var(--black1);
+	}
+
+	main :last-child {
+		margin-bottom: 0;
+	}
+</style>
