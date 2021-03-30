@@ -1,26 +1,26 @@
-import type { MessageWrapper, SvgMapMessage, UIMessage } from "../types"
+import type { MessageWrapper, SvgMapMessage, UIMessage, PluginWrapper } from "../types"
 
 const decoder = new TextDecoder()
 const svgParser = new DOMParser()
-var state = { url: "", name: "" } as { url?: string, name?: string }
+var state = { url: "", name: "" } as { url?: string, name: string }
 
 const $ = <T extends Element = Element>(selector: string): T  => document.querySelector(selector)
 
 const generateHandler = () => {
-	postMessage({ pluginMessage: { type: 'generate' } }, '*')
+	parent.postMessage({ pluginMessage: { type: "generate" } } as PluginWrapper, '*')
 	$<HTMLTextAreaElement>("textarea#out").value = "Generating Sprite"
 }
 
 $("#sprite").addEventListener("click", generateHandler)
 
 $("#dl").addEventListener("click", () => {
-	const a = document.createElement('a');
-	a.href = state.url
-	a.download = `${state.name.replace(/[\\\/]/g, "-")}.sprite.svg`
-	a.click()
+	const link = document.createElement('a');
+	link.href = state.url
+	link.download = `${state.name.replace(/[\\\/]/g, "-")}.sprite.svg`
+	link.click()
 })
 
-window.addEventListener("message", async (msg: MessageWrapper<SvgMapMessage | UIMessage>) => {
+window.addEventListener("message", (msg: MessageWrapper<SvgMapMessage | UIMessage>) => {
 	let data = msg.data.pluginMessage
 	if (data.type == "decode") {
 		let icons = data.payload
@@ -43,6 +43,6 @@ window.addEventListener("message", async (msg: MessageWrapper<SvgMapMessage | UI
 		}
 		$("#dl").toggleAttribute("disabled")
 	} else if (data.type = "useUI")
-		if (data.payload == "export")
+		if (data.payload = "generate")
 			generateHandler()
 })

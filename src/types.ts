@@ -11,7 +11,12 @@ export interface Message<T = any> extends Record<string, any> {
 	type: MessageType,
 	payload: T
 }
-export interface MessageWrapper<T extends Message> {
+
+export interface PluginWrapper<T extends Message = Message> {
+	pluginMessage: T
+}
+
+export interface MessageWrapper<T extends Message = Message> {
 	data: {
 		pluginMessage: T
 	}

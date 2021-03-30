@@ -30,7 +30,10 @@ const purgeConf = () => ({
 	extractors: [{
 		extractor: purgeHtml,
 		extensions: ['html']
-	}]
+	}],
+	safelist: {
+		standard: [/^::-webkit-/]
+	}
 })
 
 const exit = err => {
@@ -46,15 +49,13 @@ const processCSS = async () => {
 	let file = await readFile("src/ui/ui.css", "utf8")
 	return postcss([
 		atImport(),
-		new purgeCSS(purgeConf()),
-		cssnano({
-			preset: [
-				"advanced"
-			]
-		}),
 		inlineVars({
 			preserve: false
-		})
+		}),
+		new purgeCSS(purgeConf()),
+		cssnano({
+			preset: ["advanced"]
+		}),
 	]).process(file)
 		.catch(exit)
 		.then(result => result.css)
@@ -77,6 +78,4 @@ copyFile("src/ui/ui.html", "dist/ui.html")
 
 				writeFile("dist/ui.html", htmlText.replace(/[\t\n]/g, ""))
 			})
-
 	})
-
