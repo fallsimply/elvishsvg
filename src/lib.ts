@@ -1,18 +1,13 @@
-export interface Message<T = any> {
-	type: string,
-	payload: T
-}
-export interface svgMap extends Record<string, Uint8Array> {}
-
-export type IconParent = GroupNode | FrameNode | ComponentSetNode
-export type Icon = ComponentNode | FrameNode
+import { IconParent, svgMap, Icon } from "./types"
 
 export const validParents: Array<NodeType> = ["FRAME", "GROUP", "COMPONENT_SET"]
 
-export async function iter(frame: IconParent): Promise<svgMap> {
-	if (validParents.indexOf(frame.type) < 0)
-		return
+const reGroup = (group: string) => `(?:${group})`
+const onVals  = ["on", "yes", "true"].map(reGroup).join("|")
+const offVals = ["off", "no", "false"].map(reGroup).join("|")
 
+export async function getIcons(frame: IconParent): Promise<svgMap> {
+	if (validParents.indexOf(frame.type) < 0) return
 	let icons = frame.findAll((node: IconParent | Icon) => {
 		if (!("children" in node) || node.children.filter(e => (e.type == "FRAME" || e.type == "COMPONENT")).length > 0)
 			return false
@@ -33,9 +28,9 @@ export async function iter(frame: IconParent): Promise<svgMap> {
 
 	let svgs: svgMap = {}
 
-
 	for (const icon of icons) {
-		svgs[icon.getPluginData("prefix") + icon.name] = await icon.exportAsync({format: "SVG"})
+		let name = icon.name.replace(RegExp([`[^/ =,]+=${reGroup(onVals)}", "=${reGroup(offVals)}`].map(reGroup).join("|"), "gim"), "")
+		svgs[(icon.getPluginData("prefix") + name).replace(/[\\\/]$/, "")] = await icon.exportAsync({format: "SVG"})
 	}
 
 	return svgs

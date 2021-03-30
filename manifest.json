@@ -2,8 +2,8 @@
 	"name": "Elvish SVG (Dev)",
 	"id": "955982205019431590",
 	"api": "1.0.0",
-	"main": "plugin/code.js",
-	"ui": "plugin/ui.html",
+	"main": "dist/host.js",
+	"ui": "dist/ui.html",
 	"relaunchButtons": [
 		{"command": "export", "name": "Export SVG Sprite"}, 
 		{"command": "generate", "name": "Update Components"}

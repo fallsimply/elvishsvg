@@ -1,0 +1,90 @@
+@import "figma-plugin-ds";
+
+main {
+  padding: 1rem;
+  padding-right: calc(1rem - 10px);
+  box-sizing: border-box;
+  max-width: calc(100vw - 10px);
+  width: 100%;
+}
+
+h2, p {
+  margin: 0 0 0.5rem 0;
+}
+
+h2,
+.button--secondary,
+.button--tertiary {
+  color: var(--green);
+}
+
+/*
+	INPUT
+ */
+textarea {
+  font-family: inherit;
+  resize: vertical;
+}
+
+label, input, textarea {
+  font-weight: 500;
+}
+
+label, input:not(:focus), textarea {
+  color: var(--black8);
+}
+
+.button-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-gap: 0.5rem;
+}
+
+.button-group > .button {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.button--secondary {
+  color: var(--purple);
+  border-color: currentColor;
+}
+
+.button-group, .input {
+  margin: 1rem 0;
+}
+
+input.input__field:not(:hover):not(:focus) {
+  border-color: var(--black1);
+}
+
+/*
+	SCROLLBAR
+ */
+::-webkit-scrollbar {
+  width: 10px;
+  position: absolute;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #0004;
+  border: 2px solid #fff;
+}
+::-webkit-resizer {
+  display: none;
+}
+
+/*
+	DETAILS
+ */
+details > summary,
+details :nth-child(2) {
+  padding: 0.25rem 0.75rem;
+}
+
+details:focus,
+details > summary:focus {
+  outline: var(--blue) auto 1px;
+}
