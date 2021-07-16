@@ -1,23 +1,49 @@
-import type { MessageWrapper, SvgMapMessage, UIMessage, PluginWrapper } from "../types"
+import { MessageWrapper, UIState, SvgMapMessage, UIMessage, PluginWrapper, Settings, HostCommands } from "../types"
 
-const decoder = new TextDecoder()
-const svgParser = new DOMParser()
-var state = { url: "", name: "" } as { url?: string, name: string }
+var state:    UIState  = { url: "", name: "" }
+var settings: Settings = { removeFill: "#ff00ff", suiteName: "Suite" }
 
-const $ = <T extends Element = Element>(selector: string): T  => document.querySelector(selector)
+const $: typeof document.querySelector = (sel: string) => document.querySelector(sel)
+const $$: typeof document.querySelectorAll = (sel: string) => document.querySelectorAll(sel)
 
-const generateHandler = () => {
-	parent.postMessage({ pluginMessage: { type: "generate" } } as PluginWrapper, '*')
-	$<HTMLTextAreaElement>("textarea#out").value = "Generating Sprite"
+const send = (msg: PluginWrapper) => window.parent.postMessage(msg, "*")
+
+const genSprite = () => {
+	send({pluginMessage: { type: HostCommands.Sprite }})
+	$("textarea").value = "Generating Sprite"
 }
 
-$("#sprite").addEventListener("click", generateHandler)
+const genComponents = () => {
+	send({ pluginMessage: { type: HostCommands.Component } })
+	$("textarea").value = "Generating Components"
+}
 
-$("#dl").addEventListener("click", () => {
+const updateSettings = () => { for (const key in settings) $<HTMLInputElement>(`input#${key}`).value = settings[key] }
+
+const decoder = new TextDecoder(),
+	  parser  = new DOMParser()
+
+function doDownload() {
 	const link = document.createElement('a');
+	const file = state.name.replace(/[\\\/]/g, "-")
 	link.href = state.url
-	link.download = `${state.name.replace(/[\\\/]/g, "-")}.sprite.svg`
+	link.download = `${file}.sprite.svg`
 	link.click()
+}
+
+$("button[sprite]").addEventListener("click", genSprite)
+$("button[component]").addEventListener("click", genComponents)
+$("button[download]").addEventListener("click", doDownload)
+
+$$("dialog button[close]").forEach(elem => elem.addEventListener("click", (e: Event) => (<Element>e.target).closest("dialog").close()))
+
+$("dialog[settings]").addEventListener("close", (e: Event) => { (<HTMLDialogElement>e.target).returnValue })
+$("button[settings]").addEventListener("click", () => $("dialog").showModal())
+
+$<HTMLFormElement>("dialog[settings] form").addEventListener("submit", (e) => {
+	(<Element>e.target).querySelectorAll("input").forEach(({id, value}) => settings[id] = value)
+	send({pluginMessage: { type: HostCommands.Settings, payload: settings }});
+	e.preventDefault()
 })
 
 window.addEventListener("message", (msg: MessageWrapper<SvgMapMessage | UIMessage>) => {
@@ -28,21 +54,27 @@ window.addEventListener("message", (msg: MessageWrapper<SvgMapMessage | UIMessag
 		let colorRE = new RegExp($<HTMLInputElement>("input#removeFill").value.toUpperCase(), "g")
 
 		for (const icon in icons) {
-			let svgText = decoder.decode(icons[icon]).replace(/[\n\t]/g, "").replace(colorRE, "currentColor")
-			let svg = svgParser.parseFromString(svgText, "image/svg+xml").documentElement
+			let txt = decoder.decode(icons[icon]).replace(/[\n\t]/g, "").replace(colorRE, "currentColor")
+			let svg = parser.parseFromString(txt, "image/svg+xml").documentElement
 			svg.setAttribute("id", icon)
 			groups.push(svg.outerHTML)
 		}
 
-		let sprite: string = `<svg fill="none"><defs>${groups.join()}</defs></svg>`
+		let sprite = `<svg fill="none"><defs>${groups.join()}</defs></svg>`
 
-		$<HTMLTextAreaElement>("textarea#out").value = sprite
-		state = {
-			url: `data:image/svg+xml;utf8,${encodeURIComponent(sprite)}`,
-			name: data.parent
+		$("textarea").value = sprite
+		state = { name: data.parent, url: `data:image/svg+xml;utf8,${encodeURIComponent(sprite)}` }
+
+		$("button[download]").toggleAttribute("disabled")
+	} else if (data.type = "useUI") {
+		if (!!data.settings) {
+			Object.keys(data.settings).forEach(k => settings[k] = data.settings[k])
+			updateSettings()
 		}
-		$("#dl").toggleAttribute("disabled")
-	} else if (data.type = "useUI")
-		if (data.payload = "generate")
-			generateHandler()
+
+		if (data.payload == "export")
+			genSprite()
+		else if (data.payload == "generate")
+			genComponents()
+	}
 })

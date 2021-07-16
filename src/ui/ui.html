@@ -1,22 +1,49 @@
 <main>
 	<div class="onboarding-tip">
 		<div class="icon icon--styles"></div>
-		<div class="onboarding-tip__msg">Turn your nested (stroke) icons library into a svg sprite</div>
-	</div>
-	<p class="info"></p>
-	<div class="input">
-		<label class="type--small" for="removeFill">Remove Fill Color</label>
-		<input type="text" class="input__field type--small" id="removeFill" value="#ff00ff" style="letter-spacing: .025rem">
+		<div class="onboarding-tip__msg">Generate SVG Sprites and Components for your icons</div>
+		<button class="icon-button" settings>
+			<div class="icon icon--adjust" ></div>
+		</button>
 	</div>
 	<div class="input">
-		<label class="type--small" for="out">Output</label>
-		<textarea id="out" rows="6" class="textarea type--small">Click Generate and your Sprite will be here</textarea>
+		<label class="type type--bold" for="out">Output</label>
+		<textarea id="out" rows="6" class="textarea type">Click Generate and your Sprite will be here</textarea>
 	</div>
 	<div class="button-group">
-		<button id="sprite" class="button button--primary">★ Sprites</button>
-		<button id="comp" class="button button--secondary" disabled>❖ Components</button>
+		<button class="button button--primary" sprite>★ Sprites</button>
+		<button class="button button--secondary" component>❖ Components</button>
 	</div>
 	<div class="button-group">
-		<button id="dl" class="button button--tertiary" disabled>↓ Download</button>
+		<button class="button button--tertiary" download disabled>↓ Download</button>
 	</div>
+
+	<dialog settings>
+		<header>
+			<h2>Settings</h2>
+			<button class="icon-button" close>
+				<div class="icon icon--close"></div>
+			</button>
+		</header>
+		<div>
+			<form>
+				<div class="input">
+					<label class="type type--bold" for="removeFill" title="This color will be replaced with currentColor in exported SVG files">Replace Color</label>
+					<input type="text" class="input__field type" name="removeFill" id="removeFill" value="#ff00ff">
+				</div>
+				<div class="input">
+					<label class="type type--bold" for="suiteName" title="Name of parent frame that shows up in the asset panel">Component Suite Name</label>
+					<input type="text" class="input__field type" name="suiteName" id="suiteName" value="Suite">
+				</div>
+				<div class="input">
+					<label class="type type--bold" for="gap" title="Gap between the parent and component frame">Gap</label>
+					<input type="number" class="input__field type" name="gap" id="gap" value="0">
+				</div>
+				<div class="button-group">
+					<button class="button button--primary" type="submit">Save</button>
+					<button class="button button--secondary" close>Cancel</button>
+				</div>
+			</form>
+		</div>
+	</dialog>
 </main>

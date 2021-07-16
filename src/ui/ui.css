@@ -8,8 +8,16 @@ main {
 	width: 100%;
 }
 
+* {
+	font-family: inherit
+}
+
+:focus {
+	outline: var(--blue) auto 1px;
+}
+
 h2, p {
-	margin: 0 0 0.5rem 0;
+	margin: 0 0 .5rem 0;
 }
 
 .button--primary {
@@ -22,16 +30,21 @@ h2,
 	color: var(--green);
 }
 
+.button--secondary {
+	border-color: currentColor;
+}
+
 /*
 	INPUT
- */
-textarea.textarea {
+*/
+textarea.textarea:not(:default) {
 	font-family: inherit;
 	resize: vertical;
 }
 
 label, input, textarea {
 	font-weight: 500;
+	letter-spacing: .025rem;
 }
 
 label, input:not(:focus), textarea {
@@ -50,9 +63,9 @@ label, input:not(:focus), textarea {
 	font-weight: 500;
 }
 
-.button--secondary {
+.button--secondary[component] {
 	color: var(--purple);
-	border-color: currentColor;
+	
 }
 
 .button-group, .input {
@@ -63,28 +76,49 @@ input.input__field:not(:hover):not(:focus) {
 	border-color: var(--black1);
 }
 
+button.icon-button {
+	padding: 0;
+	border-radius: 4px;
+	background: #0000;
+}
+
+label[title]::after {
+	content: "";
+	font-size: .75em;
+    display: inline-block;
+    padding-left: .375em;
+	font-weight: bold;
+	-webkit-text-stroke: .25px #000;
+}
+
 /*
 	SCROLLBAR
- */
-::-webkit-scrollbar {
+*/
+::-webkit-scrollbar, ::-webkit-scrollbar-corner, ::-webkit-resizer  {
 	width: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
 	border-radius: 10px;
-	background: rgba(0, 0, 0, .1);
-	border: 2px solid #fff;
+	background: rgba(0, 0, 0, .25);
+	border: 3px solid #fff;
 }
 
-::-webkit-resizer {
-	border-radius: 0 4px 2px 4px;
-	border: 8px solid;
-	border-color: transparent rgba(0, 0, 0, .1) rgba(0, 0, 0, .1) transparent;
+textarea.textarea, textarea.textarea:hover {
+	cursor: auto;
+	background-image: linear-gradient(-45deg, #0000 12.5%, #0006 12.5%, #0006 25%, #0000 25%, #0000 37.5%, #0006 37.5%, #0006 50%, #0000 50%);
+	background-size: 6px 6px;
+	background-repeat: no-repeat;
+	background-position: bottom 2px right 2px
+}
+
+textarea::-webkit-resizer {
+	display: none;
 }
 
 /*
 	DETAILS
- */
+*/
 /* details > summary,
 details :nth-child(2) {
 	padding: 0.25rem 0.75rem;
@@ -94,3 +128,52 @@ details:focus,
 details > summary:focus {
 	outline: var(--blue) auto 1px;
 } */
+
+
+/* 
+	Dialog
+*/
+dialog {
+	top: 0;
+	height: 100%;
+	width: 100%;
+	border: 0;
+	box-shadow: 0 2px 14px rgb(0 0 0 / 15%), 0 0 0 0.5px rgb(0 0 0 / 20%);
+    border-radius: 2px;
+}
+
+dialog > header {
+	display: flex;
+	justify-content: space-between;
+}
+
+dialog > header > h2 {
+	height: 1.5rem
+}
+
+dialog > header > button[close] {
+    width: 2rem;
+}
+
+dialog > header > button[close] > div.icon {
+	height: 1.75rem;
+	background-position: -2px;
+}
+
+dialog::backdrop {
+	background: rgba(0, 0, 0, .3)
+}
+
+/* 
+	ONBOARDING
+*/
+
+.onboarding-tip {
+	display: flex;
+	justify-content: space-between;
+	padding: 0;
+}
+
+.onboarding-tip > .onboarding-tip__msg {
+	width: 100%;
+}

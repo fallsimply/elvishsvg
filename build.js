@@ -1,10 +1,6 @@
 const { build } = require("esbuild")
 const { readFile, copyFile, writeFile } = require("fs/promises")
-// CSS
 const postcss = require("postcss")
-const atImport = require("postcss-import")
-const cssnano = require('cssnano')
-const inlineVars = require('postcss-custom-properties');
 const purgeCSS = require("@fullhuman/postcss-purgecss")
 const purgeHtml = require("purgecss-from-html")
 
@@ -20,7 +16,8 @@ const jsConf = (file, options = {}) => ({
 	outdir: "dist",
 	assetNames: "[name]",
 	bundle: true,
-	minify: true,
+	minifyWhitespace: true,
+	minifySyntax: true,
 	...options,
 })
 
@@ -32,7 +29,7 @@ const purgeConf = () => ({
 		extensions: ['html']
 	}],
 	safelist: {
-		standard: [/^::-webkit-/]
+		standard: [/^::-webkit-/, /:focus/, /::backdrop/]
 	}
 })
 
@@ -48,15 +45,12 @@ const processJS = () => build(jsConf(["ui/ui.ts"], { write: false })).catch(exit
 const processCSS = async () => {
 	let file = await readFile("src/ui/ui.css", "utf8")
 	return postcss([
-		atImport(),
-		inlineVars({
-			preserve: false
-		}),
+		require("postcss-import")(),
+		require("postcss-custom-properties")({ preserve: false }),
 		new purgeCSS(purgeConf()),
-		cssnano({
-			preset: ["advanced"]
-		}),
-	]).process(file)
+		require("cssnano")({ preset: ["advanced"] }),
+	])
+		.process(file)
 		.catch(exit)
 		.then(result => result.css)
 }
@@ -71,10 +65,10 @@ copyFile("src/ui/ui.html", "dist/ui.html")
 				htmlText = e.toString() + "\n"
 
 				let js = await processJS()
-				htmlText += `<script>${js.outputFiles[0].text}</script>\n`
+				htmlText += `<script>${js.outputFiles[0].text.trim()}</script>\n`
 
 				let css = await processCSS()
-				htmlText += `<style>${css.toString()}</style>\n`
+				htmlText += `<style>${css.toString()}</style>`
 
 				writeFile("dist/ui.html", htmlText.replace(/[\t\n]/g, ""))
 			})

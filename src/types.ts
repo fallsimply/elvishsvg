@@ -1,15 +1,29 @@
-export type Commands = "generate" | "export"
-export type MessageType = "useUI" | "decode" | Commands
+// export type HostCommands = "generate" | "export" | "settings" | "reset" | "done"
+export enum HostCommands {
+	Component = "generate",
+	Sprite = "export",
+	Settings = "settings",
+	Reset = "rest"
+}
+
+export type MessageType = "useUI" | "decode" | HostCommands
 
 export type IconParent = GroupNode | FrameNode | ComponentSetNode
 export type Icon = ComponentNode | FrameNode
 
 export interface svgMap extends Record<string, Uint8Array> {}
 
-/* MESSAGES */
-export interface Message<T = any> extends Record<string, any> {
-	type: MessageType,
-	payload: T
+export interface Settings extends Record<string, string> {
+	removeFill?: string
+	suiteName?: string
+}
+
+/*
+	MESSAGES
+*/
+export interface Message<Payload = any, T = MessageType> extends Record<string, any> {
+	type: T,
+	payload?: Payload
 }
 
 export interface PluginWrapper<T extends Message = Message> {
@@ -26,6 +40,14 @@ export interface SvgMapMessage extends Message<svgMap> {
 	type: "decode"
 }
 
-export interface UIMessage extends Message<Commands> {
+export interface UIMessage extends Message<HostCommands> {
 	type: "useUI"
 }
+
+/* 
+	UI
+*/
+export type UIState = {
+	name: string,
+	url?: string
+} & Settings
