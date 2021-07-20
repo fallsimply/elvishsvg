@@ -9,31 +9,17 @@ body:
       description: Which platforms does the bug occur on
       options:
         - label: Figma Desktop
-          validations:
-            required: false
         - label: Web
-          validations:
-            required: false
   - type: checkboxes
     id: problem_area
     attributes:
       label: What's Broken
       options:
         - label: Sprite Generation
-          validations:
-            required: false
         - label: Component Generation
-          validations:
-            required: false
         - label: Sprite Downloading
-          validations:
-            required: false
         - label: Settings Dialog
-          validations:
-            required: false
         - label: Plugin Menu Item(s)
-          validations:
-            required: false
   - type: textarea
     id: problem
     attributes:
