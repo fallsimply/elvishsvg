@@ -1,0 +1,55 @@
+name: Bug Report
+description: Submit A Bug Report
+title: '[Bug]: '
+body:
+  - type: checkboxes
+    id: Platform
+    attributes:
+      label: Platform
+      description: Which platforms does the bug occur on
+      options:
+        - label: Figma Desktop
+          validations:
+            required: false
+        - label: Web
+          validations:
+            required: false
+  - type: checkboxes
+    id: problem_area
+    attributes:
+      label: What's Broken
+      options:
+        - label: Sprite Generation
+          validations:
+            required: false
+        - label: Component Generation
+          validations:
+            required: false
+        - label: Sprite Downloading
+          validations:
+            required: false
+        - label: Settings Dialog
+          validations:
+            required: false
+        - label: Plugin Menu Item(s)
+          validations:
+            required: false
+  - type: textarea
+    id: problem
+    attributes:
+      label: Describe the problem (in detail)
+      description: >-
+        Include the steps to get the problem and what's happening. (Screenshots
+        Appreciated)
+    validations:
+      required: true
+  - type: input
+    id: file_url
+    attributes:
+      label: Link to File - Optional
+      placeholder: https://www.figma.com/file/...
+  - type: markdown
+    attributes:
+      value: >-
+        This template was generated with [Issue Forms
+        Creator](https://www.issue-forms-creator.app/)
